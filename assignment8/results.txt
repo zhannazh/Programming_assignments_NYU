@@ -1,0 +1,16 @@
+RESULT FOR 1 position of $1000
+Mean of the daily return:               0.017
+Standard deviation of the daily return: 0.99986
+
+RESULT FOR 10 positions of $100
+Mean of the daily return:               0.01272
+Standard deviation of the daily return: 0.3194
+
+RESULT FOR 100 positions of $10
+Mean of the daily return:               0.02039
+Standard deviation of the daily return: 0.09972
+
+RESULT FOR 1000 positions of $1
+Mean of the daily return:               0.02001
+Standard deviation of the daily return: 0.03197
+

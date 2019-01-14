@@ -1,0 +1,29 @@
+zvz201
+12/03/2016
+
+Overall, income per capita does not seem to have changed much over such a short period of time. 
+
+Oceania: The upper whisker in the boxplot for Oceania keeps jumping up and down over time. 
+This could be due to changes in countries with non-missing income values. The individual histogram
+shows an uneven (almost bimodal) distribution of per capita income towards 2012.
+
+Europe: Median per capita income seems to have declined in Europe between 2007-2012 but overall
+we observe little change (boxplot). According to individual histograms, per capita income in European 
+countries with outlier (large) incomes declined.
+
+Africa:  The upper whisker and outliers are moving up slightly between 2010 and 2012, but the median
+income per capita seems to have dropped between 2011 and 2012. This is consistent with the trend
+exhibited in individual histograms, where it seems that more countries bunch at lower income 
+towards the end of the time period. 
+
+Asia: The median seems to increase slightly. The upper whisker and 3rd quartile go up, then down,
+and then up again. In the histogram, it is clear that some outlier observations keep moving to
+the right (i.e., per capita income is getting higher in countries that already 
+had high per capita income).
+
+North America: Median per capita income does not seem to have changed much, but the distance
+from the median to either quartile (1st and 3rd) seems to have evened out with time (primarily because
+the 3rd quartile and the upper wishker dropped).
+
+South America: Overall, a slight improvement in income per capita.
+

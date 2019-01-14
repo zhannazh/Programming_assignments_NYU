@@ -1,0 +1,324 @@
+Question 1. 	Describe the changes you made to make the game work with Python 3
+
+In adventure.py, line 37: changed raw_input('> ') to input('> ')
+Note: raw_input() was renamed to input() in python 3. Source: https://docs.python.org/3/whatsnew/3.0.html
+
+****************
+Question 2.	Describe three main techniques that the author used to structure the program.
+
+The author uses:
+-	Modules: e.g., game.py, model.py, play.py
+-	Classes: e.g., Move(object), Room(object), Dwarf(object) in model.py; Game(Data) in game.py
+-	Functions and methods: e.g., baudout(s), loop() in adventure.py; install_words(game) in prompt.py; 
+        load_advent_dat(data) in play.py 
+		o Functions are used both inside and outside classes
+
+****************
+Question 3.	Has the author used meaningful names? Give some examples of meaningful names used and what 
+you think they mean. Give some examples of where the author has not used meaningful names. 
+
+It looks like the author uses a mixture of meaningful and less meaningful names. Below I provide some examples.
+
+Examples of (more or less) meaningful names:
+
+-	In game.py, line 323, function's name "describe_location" gives a good idea of what the function is 
+	intended to do (describe the player's current location)
+
+-	In game.py, line 153, function's name "move_to" gives a good idea of what the function is intended
+ 	to do (move the player to a new location)
+
+-	In game.py, line 1698, function's name "score_and_exit" gives a good idea of what the function is 		
+	intended to do (displays the player's score and exits the game) 
+	o	(aside: It also gives comments on improving the score so potentially a more informative name 		
+	could be "score_comment_and_exit")
+
+Examples of NOT very meaningful names: 
+
+-	In game.py, lines 130-131, the function's name is "start2." It is not clear what "start2" does 		
+	exactly. The comment in line 131 explains: "Display instructions if the user wants them." Hence, 		
+	instead of "start2" a more meaningful function name could be “display_instructions”.
+
+-	game.py has functions named "i_drink" (line 1214) and "t_drink" (line 1220). It is not clear (from 	
+	the names) what these functions do exactly and how they are different from each other. 
+
+-	In game.py, line 1474, the function's name is "i_brief." It is not clear what "i_brief" does.
+
+-	In adventure.py, lines 13 and 14, the argument in function "baudout" is "s." It is not clear what
+ 	this "s" stands for 
+
+-	In adventure.py, line 19, the name of the function "loop" could be more informative. It is not 		
+	clear what the function loops over/does. 
+
+****************
+Question 4. Do the functions used in the code do one thing? Give some examples of functions that only
+do one thing. Give some examples of functions that do more than one thing.
+
+The code contains a mixture of functions -  some do one thing only, others do more than one thing. 
+
+Functions that do only one thing:
+
+-	In game.py, lines 57-58, function "random"  does one thing 
+	def random(self):
+       		return self.random_generator.random()
+
+-	In game.py, lines 60-61, function "choice" does one thing
+   	 def choice(self, seq):
+        	return self.random_generator.choice(seq)
+
+Functions that do more than one thing:
+
+-	In adventure.py, lines 19-41, function "loop" does more than one thing: e.g., it defines "parser," 	
+	has an "if-else" block, and a "while not" block.
+
+-	In prompt.py, lines 28-38, function "install_words" does more than one thing: e.g., it defines 		
+	"words" and then loops through them. 
+
+-	In game.py, lines 153-186, function "move_to" does more than one thing: it checks several 			
+	conditions (i.e., goes through several "if"-related blocks of code)
+
+****************
+Question 5.	Do any of the functions cause side effects? If so, which ones?
+
+Reference: Clean Code book, p. 44.  "Side effects are lies. Your function promises to do one thing, but it 
+also does other hidden things."
+
+In game.py, lines 130-146, function start2 is intended to "display instructions" as specified in comments. 
+However, it seems to be doing something else with "treasures" and "describe_location".
+
+    def start2(self, yes):
+        """Display instructions if the user wants them."""
+        if yes:
+            self.write_message(1)
+            self.hints[3].used = True
+            self.lamp_turns = 1000
+
+        self.oldloc2 = self.oldloc = self.loc = self.rooms[1]
+        self.dwarves = [ Dwarf(self.rooms[n]) for n in (19, 27, 33, 44, 64) ]
+        self.pirate = Pirate(self.chest_room)
+
+        treasures = self.treasures
+        self.treasures_not_found = len(treasures)
+        for treasure in treasures:
+            treasure.prop = -1
+
+        self.describe_location()
+
+****************
+Question 6.	Can you find any repeated code that could be made into a function
+
+In model.py, lines 130-140 (see below), self.rooms and self.is_toting are repeated in 3 functions and could be 
+more compactly combined into a function.
+
+    def carry(self):
+        self.rooms[:] = []
+        self.is_toting = True
+
+    def drop(self, room):
+        self.rooms[:] = [ room ]
+        self.is_toting = False
+
+    def hide(self):
+        self.rooms[:] = []
+        self.is_toting = False
+
+
+Also, a fair amount of functions in the program have if-elif-else statements that potentially could be more
+compactly re-written as functions. For example, function defined in model.py, lines 11-36 (def __repr__(self)), 
+has 2 blocks of if-elif-(else) code. The first block could be more compactly re-written as a function.
+
+****************
+Question 7.	Does the program use exception handling? Can you find any input that causes the program
+to terminate abnormally? Hint: run the program from the terminal prompt. The invalid input
+may not be normal text.
+
+Yes, in adventure.py, lines 43-47 use exception handling. 
+
+if __name__ == "__main__":
+    try:
+        loop()
+    except EOFError:
+        pass
+
+The program does not terminate abnormally because whenever an exception is encountered, the "pass" sends the 
+program back to run the loop.
+
+
+****************
+Question 8. Do any of the classes have responsibility over more than one piece of functionality. If so,
+which ones?
+
+In game.py, starting with line 19, class "Game" has many different functions each with a different 
+responsibility(ies) (e.g., write, write_message, is_dark, is_here, start, star2, move_to, move_dwarves, describe_location, etc.).
+
+Another example is class "Move" (model.py, lines 3-36, in) that has two if-elif-else blocks (i.e., checks two conditions).
+
+****************
+Question 9.	Are all the classes cohesive? List any that aren't .
+
+Reference: Clean code book, p. 140.  "Classes should have a small number of instance variables. Each of the methods
+of a class should manipulate one or more of those variables. In general the more variables a method manipulates 
+the more cohesive that method is to its class. A class in which each variable is used by each method is maximally cohesive."
+
+Class "Game" (game.py, starting with line 19) appears to be cohesive because its (many) functions use the 
+instance variables (specified attributes, e.g., max_deaths).
+
+Examples of classes that are NOT cohesive:
+
+In model.py, lines 165-183, class "Dwarf" has 2 instance variables (is_dwarf and is_pirate, see below) 
+but it does not appear that the function manipulates any of them.
+
+    is_dwarf = True
+    is_pirate = False
+
+    def __init__(self, room):
+        self.start_at(room)
+        self.has_seen_adventurer = False
+
+    def start_at(self, room):
+        self.room = room
+        self.old_room = room
+
+    def can_move(self, move):
+        if not isinstance(move.action, Room):
+            return False
+        room = move.action
+        return (room.is_after_hall_of_mists
+                and not room.is_forced
+                and not move.condition == ('%', 100))
+
+Similarly, class "Pirate" (model.py, lines 185-187) is an odd class as it specifies two instance variables but does
+nothing with them.
+
+class Pirate(Dwarf):
+    is_dwarf = False
+    is_pirate = True
+
+****************
+Question 10. Describe the author's approach to commenting the code. Provide examples of good and bad
+comments that have been used in the code.
+
+The program seems to have just the right amount of comments (it is not a comment-heavy program). The author 
+occasionally explains what the function does, or what a particular block or line of code does so that the 
+reader can understand the code quickly. 
+
+Examples of good comments:
+
+In game.py, lines 3-7, the author provides an explanation about numbers used in the file:
+
+# Numeric comments scattered through this file refer to FORTRAN line
+# numbers, for those comparing this file and `advent.for`; so "#2012"
+# refers to FORTRAN line number 2012 (which you can find easily in the
+# FORTRAN using Emacs with an interactive search for newline-2012-tab,
+# that is typed C-s C-q C-j 2 0 1 2 C-i).
+
+In game.py, lines 148-151: (Explanation of intent)
+
+    # Routines that handle the aftermath of "big" actions like movement.
+    # Although these are called at the end of each `do_command()` cycle,
+    # we place here at the top of `game.py` to mirror the order in the
+    # advent.for file.
+
+In game.py, lines 218-222: (warning of consequences)
+
+    # Without stabilizing the order with a sort, the room chosen
+    # would depend on how the Room addresses in memory happen to
+    # order the rooms in the set() - and make it impossible to
+    # test the game by setting the random number generator seed
+    # and then playing through the game.
+
+In data.py, lines 6-7 (explanation of intent)
+
+    # The Adventure data file knows only the first five characters of each
+    # word in the game, so we have to know the full verion of each word."
+
+In game.py, line 193, comment "# 5% chance per turn of meeting first dwarf" is useful to understand the code
+quickly.
+
+
+Examples of bad comments:
+
+In game.py, line 179. Comment "# IF LOC.EQ.0 ?" is not clear.
+
+In game.py, line 112: "# Game startup" is redundant because this is clear from names.
+
+In prompt.py, line 29: "# stack()[0] is this; stack()[1] is adventure.play(); so, stack()[2]" is not informative.
+
+****************
+Question 11. Provide an example of where vertical formatting has been used to make the code clearer.
+
+Prompt.py model is a good example of nice vertical formatting. Specifically:
+
+In lines 5-25, class "ReprTriggeredPhrase" (though poorly named) is separated by blank lines (at the beginning
+and the end). Each function within this class is written in such a way that there are no blank lines within each 
+function, but there is a blank line between each function (so it is easy to identify the structure of the code -
+a class with a bunch of functions within). 
+
+Following the class end, we see two blank lines followed by another function. The two blank lines are a nice way 
+to separate the class from function "install_words" 
+
+****************
+Question 12. Run the tests provided with the program. Do they pass or fail? Do you consider the tests
+meet the F.I.R.S.T. criteria? Provide details of why they do or do not meet the criteria.
+
+F.I.R.S.T. = "fast, independent, repeatable, self-validating, timely" (slide 62 in lecture notes 5) 
+As specified in the README.txt file, I ran "$ python ñm unittest discover" to run the program tests.
+The output says:
+Ran 14 tests in 9.891s
+
+OK
+
+Then I examine the three test modules in the tests folder:
+-	Change the directory to the tests folder and then run: $ python test_data.py
+
+-	test_data.py does not give any output, which I believe means that it runs with no errors (if there were some errors, 
+it should have spit out some error message)
+
+-	However, I need to study the module in detail to know what functionality it is testing specifically (e.g., whether 
+it is testing some specific game parameters (i.e., the two walkthroughs only) or all game parameters).  For example, even 
+though running test_data.py produces no errors, I know that there are some issues in the game with the i_drink and t_drink 
+functions because the program says that I drank water out of a stream instead of a bottle (see comments below in {}).
+
+{Functions "i_drink" (game.py, line 1214) and "t_drink" (game.py, line 1220) seem to be making a mistake. Specifically, at 
+the beginning of the game, when you are inside a "small brick building" and say "drink" (because we know there is water and food there),
+the answer is "You have taken a drink from the stream Ö ". 
+
+This answer is not correct as it is the SAME answer you get when you drink water from a stream, when you are outside of the building 
+(that is, at the beginning of the game, before you enter the "small brick building" you get this message: "YOU ARE STANDING AT
+THE END OF A ROAD BEFORE A SMALL BRICK BUILDING. AROUND YOU IS A FOREST.  A SMALL STREAM FLOWS OUT OF THE BUILDING AND DOWN A GULLY.")}
+
+
+-	Next, test "test_walks.py" by typing "$ python test_walks.py". 
+
+-	test_walks.py does not give any output, just like test_data.py (which I believe means that it runs with no errors. 
+If there were some errors, it should have spit out some error message.) 
+
+-	Next, test "test_commands.py" by typing "$ python test_commands.py". It gives me the following error message: 
+
+Traceback (most recent call last):
+  File "test_commands.py", line 2, in <module>
+    from play import load_advent_dat
+ImportError: No module named 'play'
+
+-	The test_commands.py module says the following in the beginning:
+from unittest import TestCase
+from play import load_advent_dat
+from game import Game
+
+Both the game and play modules are in the adventure folder, not the tests folder. So I copy the test_commands.py module into 
+the adventure folder, change the current directory back to the adventure folder and re-run "$ python test_commands.py"
+
+The result is same as above. The test_walks.py does not give any output, which should imply no error.
+
+There is not enough information conclude whether the tests meet the FIRST criteria.
+test_data.py, test_walks.py and test_commands.py seem to be:
+
+-	Fast
+-	Independent (because I can run the tests in any order) 
+-	Repeatable: I am not sure whether the tests are repeatable because repeatable implies working in any environment 
+(e.g. production, development), and we observe the program only at its final, ready-to-use stage.
+-	Self-validating: They all seem to pass (after I copy test_commands.py to the adventure folder) - i.e., they 
+produce no error messages. This means that whatever game parameters they are intended to test are working (but this 
+does not imply that the program is working properly ñ see my example above). 
+-	Timely: Not sure if they are timely as I do not know whether the tests were written during code development, 
+and not after the program was completed.
+
